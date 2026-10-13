@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/Spring Boot Projects.iml" filepath="$PROJECT_DIR$/.idea/Spring Boot Projects.iml" />
+      <module fileurl="file://$PROJECT_DIR$/auditflow-full-mvp/auditflow.iml" filepath="$PROJECT_DIR$/auditflow-full-mvp/auditflow.iml" />
+    </modules>
+  </component>
+</project>

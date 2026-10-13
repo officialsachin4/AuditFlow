@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Audit Report — AuditFlow</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Inter, -apple-system, BlinkMacSystemFont,
+            "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+            background: #f6f8fb;
+            color: #172033;
+        }
+
+        /* NAVBAR */
+
+        .navbar {
+            height: 68px;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 5%;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            font-size: 20px;
+            font-weight: 800;
+            color: #111827;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 9px;
+
+            background: linear-gradient(
+                    135deg,
+                    #4f46e5,
+                    #7c3aed
+            );
+
+            color: white;
+            font-weight: 800;
+        }
+
+        .new-scan {
+            padding: 9px 16px;
+
+            border: 1px solid #d9dee8;
+            border-radius: 9px;
+
+            background: white;
+
+            color: #344054;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            text-decoration: none;
+        }
+
+        .new-scan:hover {
+            border-color: #6366f1;
+            color: #4f46e5;
+        }
+
+        /* MAIN */
+
+        .container {
+            max-width: 1250px;
+            margin: auto;
+
+            padding: 36px 25px 70px;
+        }
+
+        .breadcrumb {
+            color: #98a2b3;
+            font-size: 13px;
+
+            margin-bottom: 22px;
+        }
+
+        .breadcrumb span {
+            color: #475467;
+        }
+
+        /* HEADER */
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+
+            margin-bottom: 28px;
+        }
+
+        .page-header h1 {
+            font-size: 30px;
+            color: #101828;
+
+            margin-bottom: 8px;
+        }
+
+        .website {
+            font-size: 14px;
+            color: #667085;
+        }
+
+        .website a {
+            color: #4f46e5;
+            text-decoration: none;
+        }
+
+        .website a:hover {
+            text-decoration: underline;
+        }
+
+        .scan-status {
+            margin-top: 8px;
+
+            font-size: 12px;
+            color: #12b76a;
+        }
+
+        /* SCORE CARD */
+
+        .score-card {
+            background: white;
+
+            border: 1px solid #e4e7ec;
+            border-radius: 18px;
+
+            padding: 30px;
+
+            display: grid;
+            grid-template-columns: 250px 1fr;
+
+            gap: 40px;
+
+            box-shadow:
+                    0 4px 15px rgba(16,24,40,.03);
+
+            margin-bottom: 28px;
+        }
+
+        /* SCORE */
+
+        .score-area {
+            display: flex;
+            flex-direction: column;
+
+            align-items: center;
+            justify-content: center;
+
+            border-right: 1px solid #edf0f4;
+        }
+
+        .score-circle {
+
+            width: 160px;
+            height: 160px;
+
+            border-radius: 50%;
+
+            background:
+                    conic-gradient(
+                            #4f46e5 calc(var(--score) * 1%),
+                            #e9edf3 0
+                    );
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            position: relative;
+        }
+
+        .score-circle::after {
+
+            content: "";
+
+            position: absolute;
+
+            width: 124px;
+            height: 124px;
+
+            background: white;
+
+            border-radius: 50%;
+        }
+
+        .score-number {
+
+            position: relative;
+            z-index: 2;
+
+            font-size: 42px;
+            font-weight: 800;
+
+            color: #101828;
+        }
+
+        .score-label {
+
+            margin-top: 14px;
+
+            font-size: 13px;
+            color: #667085;
+        }
+
+        /* SCORE INFO */
+
+        .score-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .score-info h2 {
+
+            font-size: 20px;
+
+            color: #101828;
+
+            margin-bottom: 9px;
+        }
+
+        .score-info p {
+
+            color: #667085;
+
+            font-size: 14px;
+
+            line-height: 1.7;
+
+            max-width: 650px;
+
+            margin-bottom: 22px;
+        }
+
+        /* QUICK STATS */
+
+        .quick-stats {
+
+            display: flex;
+
+            gap: 12px;
+
+            flex-wrap: wrap;
+        }
+
+        .quick-stat {
+
+            min-width: 120px;
+
+            background: #f8fafc;
+
+            border: 1px solid #edf0f4;
+
+            border-radius: 10px;
+
+            padding: 13px 17px;
+        }
+
+        .quick-stat strong {
+
+            display: block;
+
+            font-size: 21px;
+
+            color: #101828;
+        }
+
+        .quick-stat span {
+
+            display: block;
+
+            margin-top: 3px;
+
+            font-size: 11px;
+
+            color: #98a2b3;
+        }
+
+        /* SECTION */
+
+        .section-title {
+
+            font-size: 19px;
+
+            color: #101828;
+
+            margin:
+
+            32px 0 16px;
+        }
+
+        /* CATEGORY GRID */
+
+        .categories {
+
+            display: grid;
+
+            grid-template-columns:
+                    repeat(4, 1fr);
+
+            gap: 15px;
+        }
+
+        .category {
+
+            background: white;
+
+            border: 1px solid #e4e7ec;
+
+            border-radius: 14px;
+
+            padding: 19px;
+
+            transition: .2s;
+        }
+
+        .category:hover {
+
+            transform: translateY(-2px);
+
+            box-shadow:
+                    0 8px 25px rgba(16,24,40,.05);
+        }
+
+        .category-header {
+
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 14px;
+        }
+
+        .category-name {
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            color: #344054;
+        }
+
+        .category-score {
+
+            font-size: 16px;
+
+            font-weight: 800;
+
+            color: #4f46e5;
+        }
+
+        .progress {
+
+            height: 7px;
+
+            width: 100%;
+
+            background: #edf0f5;
+
+            border-radius: 20px;
+
+            overflow: hidden;
+        }
+
+        .progress-bar {
+
+            height: 100%;
+
+            width: var(--score);
+
+            background:
+                    linear-gradient(
+                            90deg,
+                            #4f46e5,
+                            #7c3aed
+                    );
+
+            border-radius: 20px;
+        }
+
+        /* FINDINGS */
+
+        .findings {
+
+            background: white;
+
+            border: 1px solid #e4e7ec;
+
+            border-radius: 16px;
+
+            overflow: hidden;
+        }
+
+        .finding {
+
+            padding: 21px 23px;
+
+            border-bottom: 1px solid #edf0f4;
+
+            display: grid;
+
+            grid-template-columns:
+                    100px 1fr;
+
+            gap: 20px;
+        }
+
+        .finding:last-child {
+            border-bottom: none;
+        }
+
+        .severity {
+
+            display: inline-flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            height: 27px;
+
+            width: 82px;
+
+            border-radius: 20px;
+
+            font-size: 11px;
+
+            font-weight: 800;
+        }
+
+        .critical {
+
+            background: #fef2f2;
+
+            color: #dc2626;
+        }
+
+        .high {
+
+            background: #fff7ed;
+
+            color: #ea580c;
+        }
+
+        .medium {
+
+            background: #fffbeb;
+
+            color: #b45309;
+        }
+
+        .low {
+
+            background: #eff6ff;
+
+            color: #2563eb;
+        }
+
+        .finding-category {
+
+            font-size: 11px;
+
+            color: #98a2b3;
+
+            margin-bottom: 5px;
+        }
+
+        .finding-title {
+
+            font-size: 15px;
+
+            font-weight: 750;
+
+            color: #1d2939;
+
+            margin-bottom: 6px;
+        }
+
+        .finding-details {
+
+            font-size: 13px;
+
+            line-height: 1.6;
+
+            color: #667085;
+
+            margin-bottom: 12px;
+        }
+
+        .recommendation {
+
+            background: #f8f9ff;
+
+            border-left: 3px solid #6366f1;
+
+            padding: 10px 13px;
+
+            font-size: 12px;
+
+            color: #475467;
+
+            line-height: 1.5;
+        }
+
+        .recommendation strong {
+
+            color: #4f46e5;
+
+            margin-right: 5px;
+        }
+
+        /* EMPTY */
+
+        .empty {
+
+            text-align: center;
+
+            padding: 55px 20px;
+
+            color: #667085;
+        }
+
+        .empty-icon {
+
+            font-size: 38px;
+
+            margin-bottom: 12px;
+        }
+
+        .empty h3 {
+
+            color: #101828;
+
+            margin-bottom: 5px;
+        }
+
+        /* FOOTER */
+
+        footer {
+
+            text-align: center;
+
+            padding: 30px;
+
+            color: #98a2b3;
+
+            font-size: 12px;
+        }
+
+        /* RESPONSIVE */
+
+        @media(max-width: 950px) {
+
+            .categories {
+
+                grid-template-columns:
+                        repeat(2, 1fr);
+            }
+
+            .score-card {
+
+                grid-template-columns: 1fr;
+            }
+
+            .score-area {
+
+                border-right: none;
+
+                border-bottom:
+                        1px solid #edf0f4;
+
+                padding-bottom: 28px;
+            }
+        }
+
+        @media(max-width: 600px) {
+
+            .container {
+
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+
+            .categories {
+
+                grid-template-columns: 1fr;
+            }
+
+            .page-header {
+
+                flex-direction: column;
+            }
+
+            .finding {
+
+                grid-template-columns: 1fr;
+
+                gap: 10px;
+            }
+
+            .score-card {
+
+                padding: 22px;
+            }
+
+            .quick-stat {
+
+                flex: 1;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- NAVBAR -->
+
+<header class="navbar">
+
+    <div class="logo">
+
+        <div class="logo-icon">
+            A
+        </div>
+
+        AuditFlow
+
+    </div>
+
+
+    <a href="/" class="new-scan">
+
+        + New Scan
+
+    </a>
+
+</header>
+
+
+
+<main class="container">
+
+
+    <!-- BREADCRUMB -->
+
+    <div class="breadcrumb">
+
+        AuditFlow /
+
+        <span>
+            Website Audit
+        </span>
+
+    </div>
+
+
+
+    <!-- HEADER -->
+
+    <section class="page-header">
+
+        <div>
+
+            <h1>
+                Website Audit Report
+            </h1>
+
+
+            <div class="website">
+
+                Website:
+
+                <a
+                        th:href="${audit.url}"
+                        th:text="${audit.url}"
+                        target="_blank">
+
+                    https://example.com
+
+                </a>
+
+            </div>
+
+
+            <div class="scan-status">
+
+                ✓ Scan completed successfully
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- OVERALL SCORE -->
+
+    <section class="score-card">
+
+
+        <div class="score-area">
+
+
+            <div
+                    class="score-circle"
+                    th:style="'--score:' + ${audit.overallScore}">
+
+                <div
+                        class="score-number"
+                        th:text="${audit.overallScore}">
+
+                    72
+
+                </div>
+
+            </div>
+
+
+            <div class="score-label">
+
+                Overall Website Score
+
+            </div>
+
+
+        </div>
+
+
+
+        <div class="score-info">
+
+
+            <h2>
+                Website Health Overview
+            </h2>
+
+
+            <p>
+
+                AuditFlow analyzed your website across
+                security, performance, accessibility, SEO,
+                privacy, technical and mobile health.
+
+            </p>
+
+
+
+            <div class="quick-stats">
+
+
+                <div class="quick-stat">
+
+                    <strong
+                            th:text="${audit.securityScore}">
+                        80
+                    </strong>
+
+                    <span>
+                        Security
+                    </span>
+
+                </div>
+
+
+                <div class="quick-stat">
+
+                    <strong
+                            th:text="${audit.performanceScore}">
+                        70
+                    </strong>
+
+                    <span>
+                        Performance
+                    </span>
+
+                </div>
+
+
+                <div class="quick-stat">
+
+                    <strong
+                            th:text="${audit.seoScore}">
+                        85
+                    </strong>
+
+                    <span>
+                        SEO
+                    </span>
+
+                </div>
+
+
+                <div class="quick-stat">
+
+                    <strong
+                            th:text="${#lists.size(audit.findings)}">
+                        5
+                    </strong>
+
+                    <span>
+                        Issues Found
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- CATEGORY SCORES -->
+
+    <h2 class="section-title">
+
+        Category Performance
+
+    </h2>
+
+
+
+    <section class="categories">
+
+
+        <!-- SECURITY -->
+
+        <div class="category">
+
+            <div class="category-header">
+
+                <span class="category-name">
+                    🛡 Security
+                </span>
+
+                <span
+                        class="category-score"
+                        th:text="${audit.securityScore + '%'}">
+                    80%
+                </span>
+
+            </div>
+
+            <div class="progress">
+
+                <div
+                        class="progress-bar"
+                        th:style="'--score:' + ${audit.securityScore} + '%'">
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- PERFORMANCE -->
+
+        <div class="category">
+
+            <div class="category-header">
+
+                <span class="category-name">
+                    ⚡ Performance
+                </span>
+
+                <span
+                        class="category-score"
+                        th:text="${audit.performanceScore + '%'}">
+                    70%
+                </span>
+
+            </div>
+
+            <div class="progress">
+
+                <div
+                        class="progress-bar"
+                        th:style="'--score:' + ${audit.performanceScore} + '%'">
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ACCESSIBILITY -->
+
+        <div class="category">
+
+            <div class="category-header">
+
+                <span class="category-name">
+                    ♿ Accessibility
+                </span>
+
+                <span
+                        class="category-score"
+                        th:text="${audit.accessibilityScore + '%'}">
+                    90%
+                </span>
+
+            </div>
+
+            <div class="progress">
+
+                <div
+                        class="progress-bar"
+                        th:style="'--score:' + ${audit.accessibilityScore} + '%'">
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- SEO -->
+
+        <div class="category">
+
+            <div class="category-header">
+
+                <span class="category-name">
+                    🔎 SEO
+                </span>
+
+                <span
+                        class="category-score"
+                        th:text="${audit.seoScore + '%'}">
+                    85%
+                </span>
+
+            </div>
+
+            <div class="progress">
+
+                <div
+                        class="progress-bar"
+                        th:style="'--score:' + ${audit.seoScore} + '%'">
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- PRIVACY -->
+
+        <div class="category">
+
+            <div class="category-header">
+
+                <span class="category-name">
+                    🔒 Privacy
+                </span>
+
+                <span
+                        class="category-score"
+                        th:text="${audit.privacyScore + '%'}">
+                    60%
+                </span>
+
+            </div>
+
+            <div class="progress">
+
+                <div
+                        class="progress-bar"
+                        th:style="'--score:' + ${audit.privacyScore} + '%'">
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- TECHNICAL -->
+
+        <div class="category">
+
+            <div class="category-header">
+
+                <span class="category-name">
+                    ⚙ Technical
+                </span>
+
+                <span
+                        class="category-score"
+                        th:text="${audit.technicalScore + '%'}">
+                    90%
+                </span>
+
+            </div>
+
+            <div class="progress">
+
+                <div
+                        class="progress-bar"
+                        th:style="'--score:' + ${audit.technicalScore} + '%'">
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- MOBILE -->
+
+        <div class="category">
+
+            <div class="category-header">
+
+                <span class="category-name">
+                    📱 Mobile
+                </span>
+
+                <span
+                        class="category-score"
+                        th:text="${audit.mobileScore + '%'}">
+                    75%
+                </span>
+
+            </div>
+
+            <div class="progress">
+
+                <div
+                        class="progress-bar"
+                        th:style="'--score:' + ${audit.mobileScore} + '%'">
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- FINDINGS -->
+
+    <h2 class="section-title">
+
+        Issues & Recommendations
+
+    </h2>
+
+
+
+    <section class="findings">
+
+
+        <!-- FINDING -->
+
+        <div
+                class="finding"
+                th:each="f : ${audit.findings}">
+
+
+            <div>
+
+                <span
+                        class="severity"
+                        th:classappend="${#strings.toLowerCase(f.severity)}"
+                        th:text="${f.severity}">
+
+                    HIGH
+
+                </span>
+
+            </div>
+
+
+
+            <div>
+
+
+                <div
+                        class="finding-category"
+                        th:text="${f.category}">
+
+                    Security
+
+                </div>
+
+
+                <div
+                        class="finding-title"
+                        th:text="${f.title}">
+
+                    Missing security header
+
+                </div>
+
+
+                <div
+                        class="finding-details"
+                        th:text="${f.details}">
+
+                    The website is missing an important
+                    security configuration.
+
+                </div>
+
+
+                <div class="recommendation">
+
+                    <strong>
+                        Recommendation:
+                    </strong>
+
+                    <span
+                            th:text="${f.recommendation}">
+
+                        Add the recommended configuration.
+
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- NO FINDINGS -->
+
+        <div
+                class="empty"
+                th:if="${#lists.isEmpty(audit.findings)}">
+
+            <div class="empty-icon">
+                🎉
+            </div>
+
+            <h3>
+                No issues detected
+            </h3>
+
+            <p>
+                Your website passed all currently configured checks.
+            </p>
+
+        </div>
+
+
+    </section>
+
+
+</main>
+
+
+
+<footer>
+
+    AuditFlow · Automated Website Health Analysis
+
+</footer>
+
+
+</body>
+
+</html>

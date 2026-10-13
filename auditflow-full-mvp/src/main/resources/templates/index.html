@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AuditFlow — Website Health Scanner</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI",
+                         Roboto, Helvetica, Arial, sans-serif;
+            background: #f7f9fc;
+            color: #172033;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .navbar {
+            height: 72px;
+            background: #ffffff;
+            border-bottom: 1px solid #e8ecf2;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 7%;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
+            font-weight: 800;
+            color: #111827;
+        }
+
+        .logo-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            color: #667085;
+            font-size: 14px;
+        }
+
+        .nav-links a:hover {
+            color: #4f46e5;
+        }
+
+        .hero {
+            max-width: 1050px;
+            margin: auto;
+            padding: 90px 25px 70px;
+            text-align: center;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 13px;
+            border-radius: 30px;
+            background: #eef2ff;
+            color: #4f46e5;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 22px;
+        }
+
+        .badge span {
+            width: 7px;
+            height: 7px;
+            background: #22c55e;
+            border-radius: 50%;
+        }
+
+        h1 {
+            font-size: clamp(40px, 6vw, 68px);
+            line-height: 1.05;
+            letter-spacing: -2.5px;
+            color: #111827;
+            margin-bottom: 22px;
+        }
+
+        h1 .gradient {
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-text {
+            max-width: 680px;
+            margin: auto;
+            color: #667085;
+            font-size: 18px;
+            line-height: 1.7;
+        }
+
+        .scanner-card {
+            max-width: 850px;
+            margin: 45px auto 0;
+            background: white;
+            border: 1px solid #e4e8ef;
+            border-radius: 18px;
+            padding: 10px;
+            box-shadow: 0 20px 60px rgba(16, 24, 40, 0.09);
+        }
+
+        .scan-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .url-input {
+            flex: 1;
+            height: 58px;
+            border: 1px solid #d9dee8;
+            border-radius: 12px;
+            padding: 0 18px;
+            font-size: 15px;
+            outline: none;
+            color: #111827;
+            background: #fbfcfe;
+        }
+
+        .url-input:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99,102,241,.1);
+        }
+
+        .scan-btn {
+            border: none;
+            border-radius: 12px;
+            padding: 0 28px;
+            background: linear-gradient(135deg, #4f46e5, #6d28d9);
+            color: white;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .scan-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(79,70,229,.25);
+        }
+
+        .features {
+            max-width: 1100px;
+            margin: 10px auto 80px;
+            padding: 0 25px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+        }
+
+        .feature {
+            background: white;
+            border: 1px solid #e8ecf2;
+            border-radius: 16px;
+            padding: 25px;
+            transition: .2s;
+        }
+
+        .feature:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(16,24,40,.06);
+        }
+
+        .feature-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 11px;
+            background: #eef2ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 17px;
+            font-size: 19px;
+        }
+
+        .feature h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #1d2939;
+        }
+
+        .feature p {
+            color: #667085;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .trust {
+            text-align: center;
+            color: #98a2b3;
+            font-size: 13px;
+            margin-top: 28px;
+        }
+
+        .footer {
+            border-top: 1px solid #e8ecf2;
+            background: white;
+            padding: 28px 7%;
+            display: flex;
+            justify-content: space-between;
+            color: #98a2b3;
+            font-size: 13px;
+        }
+
+        @media (max-width: 800px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                padding-top: 60px;
+            }
+
+            .scan-form {
+                flex-direction: column;
+            }
+
+            .scan-btn {
+                height: 55px;
+            }
+
+            .feature-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 500px) {
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 42px;
+            }
+
+            .footer {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="navbar">
+    <div class="logo">
+        <div class="logo-icon">A</div>
+        AuditFlow
+    </div>
+
+    <nav class="nav-links">
+        <a href="#">Features</a>
+        <a href="#">How it works</a>
+        <a href="#">Reports</a>
+        <a href="#">Pricing</a>
+    </nav>
+</header>
+
+<main>
+
+    <section class="hero">
+
+        <div class="badge">
+            <span></span>
+            Automated Website Analysis
+        </div>
+
+        <h1>
+            Know exactly how healthy<br>
+            <span class="gradient">your website is.</span>
+        </h1>
+
+        <p class="hero-text">
+            Scan your website for SEO, security, accessibility, privacy,
+            performance and technical issues — all in one place.
+        </p>
+
+        <div class="scanner-card">
+
+            <form class="scan-form"
+                  th:action="@{/scan}"
+                  method="post">
+
+                <input
+                        class="url-input"
+                        type="url"
+                        name="url"
+                        placeholder="https://example.com"
+                        required
+                >
+
+                <button class="scan-btn" type="submit">
+                    Scan Website →
+                </button>
+
+            </form>
+
+        </div>
+
+        <div class="trust">
+            No signup required · Automated analysis · Actionable recommendations
+        </div>
+
+    </section>
+
+
+    <section class="features">
+
+        <div class="feature-grid">
+
+            <div class="feature">
+                <div class="feature-icon">🛡️</div>
+                <h3>Security</h3>
+                <p>
+                    Check HTTPS, security headers, cookies and
+                    important security configurations.
+                </p>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">🔎</div>
+                <h3>SEO</h3>
+                <p>
+                    Analyze titles, descriptions, headings,
+                    canonical URLs and search metadata.
+                </p>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">♿</div>
+                <h3>Accessibility</h3>
+                <p>
+                    Identify common accessibility issues such as
+                    missing alt text and language attributes.
+                </p>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">⚡</div>
+                <h3>Performance</h3>
+                <p>
+                    Check response status, page size and other
+                    technical performance indicators.
+                </p>
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+<footer class="footer">
+    <div>© 2026 AuditFlow</div>
+    <div>Automated Website Health Monitoring</div>
+</footer>
+
+</body>
+</html>
